@@ -1,0 +1,240 @@
+# Server Infrastructure Checker - .gitignore
+
+# =============================================================================
+# SECURITY & CREDENTIALS
+# =============================================================================
+
+# SSH Keys and certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+known_hosts*
+
+# Password files and credential stores
+passwords.txt
+credentials.txt
+secrets.txt
+.env
+.env.local
+.env.*.local
+
+# Configuration files with sensitive data
+config.local
+*_local.sh
+*_private.sh
+*.secret
+
+# =============================================================================
+# SCRIPT OUTPUTS & LOGS
+# =============================================================================
+
+# Log files
+*.log
+logs/
+*.out
+*.err
+
+# Output files and reports
+output/
+reports/
+results/
+*.csv
+*.json
+*.xml
+server_status_*.txt
+inventory_*.txt
+
+# Temporary files created by script
+temp/
+tmp/
+.tmp/
+*.tmp
+*.temp
+
+# =============================================================================
+# BACKUP & VERSION FILES
+# =============================================================================
+
+# Backup files
+*.bak
+*.backup
+*.old
+*~
+*.swp
+*.swo
+
+# Version control backups
+*.orig
+*.rej
+
+# =============================================================================
+# SYSTEM & EDITOR FILES
+# =============================================================================
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# EDITOR & IDE FILES
+# =============================================================================
+
+# Vim
+*.swp
+*.swo
+*~
+.vimrc.local
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# =============================================================================
+# CUSTOM CONFIGURATIONS
+# =============================================================================
+
+# Custom server lists (if you want to keep main config in repo)
+servers_production.sh
+servers_staging.sh
+servers_dev.sh
+my_servers.conf
+
+# Custom application configurations
+apps_custom.conf
+monitoring_custom.sh
+
+# Personal scripts and modifications
+*_personal.sh
+*_custom.sh
+my_*
+
+# =============================================================================
+# TESTING & DEVELOPMENT
+# =============================================================================
+
+# Test outputs
+test_results/
+test_logs/
+*.test
+
+# Development files
+dev/
+development/
+sandbox/
+
+# Mock data
+mock_*
+sample_*
+dummy_*
+
+# =============================================================================
+# DOCUMENTATION BUILDS
+# =============================================================================
+
+# Documentation build outputs
+docs/build/
+docs/_build/
+site/
+
+# =============================================================================
+# PACKAGE MANAGERS & DEPENDENCIES
+# =============================================================================
+
+# Node.js (if you add any JS tooling)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python (if you add any Python tooling)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv/
+
+# =============================================================================
+# ARCHIVES & COMPRESSED FILES
+# =============================================================================
+
+# Archives (unless specifically needed)
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.zip
+*.rar
+*.7z
+
+# =============================================================================
+# RUNTIME & CACHE FILES
+# =============================================================================
+
+# Cache directories
+.cache/
+cache/
+
+# Runtime files
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# PROJECT SPECIFIC
+# =============================================================================
+
+# Server inventory cache (if implemented)
+.server_cache
+inventory_cache.json
+
+# SSH connection cache
+.ssh_connections
+
+# Performance logs
+performance_*.log
+timing_*.txt
+
+# Custom ignore patterns (add your own below)
+# ===============================================
