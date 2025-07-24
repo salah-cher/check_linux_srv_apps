@@ -25,37 +25,26 @@ APPLICATIONS=(
 
 # --- Helper Functions ---
 print_table_header() {
-    local col1_width=$1
-    local col2_width=$2
-    local col3_width=$3
-    
-    printf "┌─%-${col1_width}s─┬─%-${col2_width}s─┬─%-${col3_width}s─┐\n" "$(printf '%*s' $col1_width | tr ' ' '─')" "$(printf '%*s' $col2_width | tr ' ' '─')" "$(printf '%*s' $col3_width | tr ' ' '─')"
-    printf "│ %-${col1_width}s │ %-${col2_width}s │ %-${col3_width}s │\n" "Application" "Status" "Version/Info"
-    printf "├─%-${col1_width}s─┼─%-${col2_width}s─┼─%-${col3_width}s─┤\n" "$(printf '%*s' $col1_width | tr ' ' '─')" "$(printf '%*s' $col2_width | tr ' ' '─')" "$(printf '%*s' $col3_width | tr ' ' '─')"
+    printf "┌─%-15s─┬─%-15s─┬─%-40s─┐\n" "$(printf '%*s' 15 | tr ' ' '─')" "$(printf '%*s' 15 | tr ' ' '─')" "$(printf '%*s' 40 | tr ' ' '─')"
+    printf "│ %-15s │ %-15s │ %-40s │\n" "Application" "Status" "Version/Info"
+    printf "├─%-15s─┼─%-15s─┼─%-40s─┤\n" "$(printf '%*s' 15 | tr ' ' '─')" "$(printf '%*s' 15 | tr ' ' '─')" "$(printf '%*s' 40 | tr ' ' '─')"
 }
 
 print_table_row() {
-    local col1_width=$1
-    local col2_width=$2
-    local col3_width=$3
-    local app_name="$4"
-    local status="$5"
-    local version="$6"
+    local app_name="$1"
+    local status="$2"
+    local version="$3"
     
     # Truncate version if too long
-    if [ ${#version} -gt $col3_width ]; then
-        version="${version:0:$((col3_width-3))}..."
+    if [ ${#version} -gt 40 ]; then
+        version="${version:0:37}..."
     fi
     
-    printf "│ %-${col1_width}s │ %-${col2_width}s │ %-${col3_width}s │\n" "$app_name" "$status" "$version"
+    printf "│ %-15s │ %-15s │ %-40s │\n" "$app_name" "$status" "$version"
 }
 
 print_table_footer() {
-    local col1_width=$1
-    local col2_width=$2
-    local col3_width=$3
-    
-    printf "└─%-${col1_width}s─┴─%-${col2_width}s─┴─%-${col3_width}s─┘\n" "$(printf '%*s' $col1_width | tr ' ' '─')" "$(printf '%*s' $col2_width | tr ' ' '─')" "$(printf '%*s' $col3_width | tr ' ' '─')"
+    printf "└─%-15s─┴─%-15s─┴─%-40s─┘\n" "$(printf '%*s' 15 | tr ' ' '─')" "$(printf '%*s' 15 | tr ' ' '─')" "$(printf '%*s' 40 | tr ' ' '─')"
 }
 
 print_docker_header() {
@@ -96,7 +85,7 @@ export SSHPASS="$SSH_PASS" # Export password for sshpass
 for SERVER in "${SERVERS[@]}"; do
     echo ""
     echo "╔═══════════════════════════════════════════════════════════════════════════════════╗"
-    echo "║                              Server: $SERVER                              ║"
+    printf "║%*s%-15s%*s║\n" 35 "" "Server: $SERVER" 35 ""
     echo "╚═══════════════════════════════════════════════════════════════════════════════════╝"
     
     # Basic System Information
@@ -108,7 +97,7 @@ for SERVER in "${SERVERS[@]}"; do
         echo "Kernel: $(uname -r)"
         echo "Architecture: $(uname -m)"
         echo "Uptime: $(uptime -p)"
-    '; then
+    ' 2>/dev/null; then
         echo ""
     else
         echo "❌ Error: Could not connect to $SERVER or get system info."
@@ -120,21 +109,16 @@ for SERVER in "${SERVERS[@]}"; do
     echo "🔍 Application Status:"
     echo "─────────────────────"
     
-    # Define column widths
-    local col1_width=15
-    local col2_width=15
-    local col3_width=40
-    
-    print_table_header $col1_width $col2_width $col3_width
+    print_table_header
     
     for (( i=0; i<${#APPLICATIONS[@]}; i+=3 )); do
         APP_NAME="${APPLICATIONS[$i]}"
         CHECK_CMD="${APPLICATIONS[$i+1]}"
         VERSION_CMD="${APPLICATIONS[$i+2]}"
         
-        if sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SERVER" "$CHECK_CMD" > /dev/null 2>&1; then
+        if sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SERVER" "$CHECK_CMD" >/dev/null 2>&1; then
             STATUS="✅ Installed"
-            VERSION=$(sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SERVER" "$VERSION_CMD" 2>/dev/null | head -1 | tr -d '\n\r')
+            VERSION=$(sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SERVER" "$VERSION_CMD" 2>/dev/null | head -1 | tr -d '\n\r' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
             if [ -z "$VERSION" ]; then
                 VERSION="Available"
             fi
@@ -143,24 +127,26 @@ for SERVER in "${SERVERS[@]}"; do
             VERSION="N/A"
         fi
         
-        print_table_row $col1_width $col2_width $col3_width "$APP_NAME" "$STATUS" "$VERSION"
+        print_table_row "$APP_NAME" "$STATUS" "$VERSION"
     done
     
-    print_table_footer $col1_width $col2_width $col3_width
+    print_table_footer
     
     # Check for running Docker containers only
     echo ""
     echo "🐳 Running Docker Containers:"
     echo "────────────────────────────"
     
-    if sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SERVER" "command -v docker >/dev/null" 2>&1; then
+    if sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SERVER" "command -v docker >/dev/null 2>&1"; then
         # Get only running containers
         DOCKER_OUTPUT=$(sshpass -e ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$SSH_USER@$SERVER" "docker ps --format '{{.Names}}\t{{.Image}}\t{{.Status}}'" 2>/dev/null)
         
         if [ -n "$DOCKER_OUTPUT" ]; then
             print_docker_header
             echo "$DOCKER_OUTPUT" | while IFS=$'\t' read -r name image status; do
-                print_docker_row "$name" "$image" "$status"
+                if [ -n "$name" ]; then
+                    print_docker_row "$name" "$image" "$status"
+                fi
             done
             print_docker_footer
         else
