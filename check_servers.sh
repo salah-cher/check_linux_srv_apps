@@ -163,5 +163,5 @@ unset SSHPASS # Unset the password variable for security
 
 echo ""
 echo "╔═══════════════════════════════════════════════════════════════════════════════════╗"
-echo "║                              All servers checked.                                ║"
+echo "║                              All servers checked.                                 ║"
 echo "╚═══════════════════════════════════════════════════════════════════════════════════╝"
